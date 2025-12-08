@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "C/C++: 编译到 output 目录",
+      "type": "shell",
+      "command": "gcc",
+      "args": [
+        "${file}",
+        "-o",
+        "${fileDirname}/output/${fileBasenameNoExtension}.exe",
+        "-Wall",
+        "-Wextra"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": ["$gcc"],
+      "windows": {
+        "options": {
+          "shell": {
+            "executable": "powershell.exe",
+            "args": ["-NoExit", "-Command"]
+          }
+        }
+      }
+    },
+    {
+      "label": "C/C++: 运行 output 中的程序",
+      "type": "shell",
+      "command": "${fileDirname}/output/${fileBasenameNoExtension}.exe",
+      "group": "test",
+      "dependsOn": "C/C++: 编译到 output 目录",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
