@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document视差滚动效果</title>
+    <style>
+      /* 先配置好整个页面 */
+      * {
+        margin: 0;
+        padding: 0;
+        /* 防止边框和内边距撑大盒子 */
+        box-sizing: border-box;
+      }
+      /* 让body和html都占满整个视口 */
+      body,
+      html {
+        height: 100%;
+        width: 100%;
+      }
+      section[class^="section"] {
+        height: 100%;
+        width: 100%;
+      }
+      .section1 {
+        background: url(./bg1.jpg) center center / cover no-repeat fixed;
+      }
+
+      div {
+        width: 100%;
+        height: 25%;
+        color: #fff;
+        font-size: 1em;
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="section1">
+      <div class="container">
+        <p>
+          夕阳是熔化的铁，把云絮焊成金红的鳞甲。天空在燃烧，而大地只是沉默地承接这些温柔的灰烬。
+          这样的黄昏，让人想起灶膛里将熄的柴火，明明灭灭地舔着旧事。
+          而光影是狡黠的，它把柳枝拉长成琴弦，却让归鸟的翅膀，在弦上拨出无声的颤音。
+          偶尔有晚钟传来，像一粒铜纽扣，滚进群山厚重的褶皱里。
+        </p>
+      </div>
+      <h2>夕阳余晖</h2>
+    </section>
+  </body>
+</html>

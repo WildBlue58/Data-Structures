@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <title>粉色示爱特效</title>
+    <meta name="description" content="粉色浪漫爱心背景，点击释放爱心特效。" />
+    <meta name="theme-color" content="#ff5c8a" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <style>
+      :root {
+        --pink-50: #fff0f4;
+        --pink-100: #ffe1ea;
+        --pink-200: #ffc8d8;
+        --pink-300: #ff9fbb;
+        --pink-400: #ff7aa3;
+        --pink-500: #ff5c8a;
+        --pink-600: #ff3b7a;
+        --pink-700: #e02669;
+        --ink-900: #2a0a1a;
+        --white: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        color: var(--ink-900);
+        touch-action: manipulation;
+        background: radial-gradient(
+            1200px 600px at 80% -10%,
+            var(--pink-100),
+            transparent 60%
+          ),
+          radial-gradient(
+            1000px 800px at 0% 0%,
+            var(--pink-50),
+            transparent 55%
+          ),
+          linear-gradient(180deg, var(--pink-50), var(--white));
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-family: ui-rounded, "PingFang SC", "Hiragino Sans GB",
+          "Microsoft YaHei", Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+          Arial, "Noto Sans SC", sans-serif;
+      }
+      /* dreamy vignette */
+      .vignette {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(
+            1200px 1200px at 50% 10%,
+            rgba(255, 122, 163, 0.25),
+            transparent 60%
+          ),
+          radial-gradient(
+            800px 600px at 10% 90%,
+            rgba(255, 96, 144, 0.2),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 900px at 90% 60%,
+            rgba(255, 96, 144, 0.18),
+            transparent 60%
+          );
+        mix-blend-mode: screen;
+        z-index: 1;
+      }
+      /* soft sparkle overlay */
+      .sparkle {
+        position: fixed;
+        inset: -10% -10%;
+        pointer-events: none;
+        z-index: 2;
+        background: radial-gradient(
+            2px 2px at 10% 20%,
+            rgba(255, 255, 255, 0.7),
+            transparent 40%
+          ),
+          radial-gradient(
+            2px 2px at 30% 80%,
+            rgba(255, 255, 255, 0.6),
+            transparent 40%
+          ),
+          radial-gradient(
+            2px 2px at 60% 30%,
+            rgba(255, 255, 255, 0.55),
+            transparent 40%
+          ),
+          radial-gradient(
+            2px 2px at 85% 60%,
+            rgba(255, 255, 255, 0.65),
+            transparent 40%
+          ),
+          radial-gradient(
+            1.5px 1.5px at 50% 50%,
+            rgba(255, 255, 255, 0.5),
+            transparent 40%
+          );
+        filter: blur(0.4px);
+        animation: twinkle 12s linear infinite;
+        opacity: 0.6;
+      }
+      @keyframes twinkle {
+        0% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          opacity: 0.75;
+        }
+        100% {
+          transform: translateY(-2%) rotate(360deg);
+        }
+      }
+      /* canvas below UI */
+      #heartsCanvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        display: block;
+      }
+      main {
+        position: relative;
+        z-index: 3;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: calc(24px + env(safe-area-inset-top, 0px)) 24px
+          calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+      .title {
+        margin: 0 0 8px 0;
+        font-size: clamp(36px, 7vw, 72px);
+        line-height: 1.1;
+        letter-spacing: 0.5px;
+        background: conic-gradient(
+          from 180deg at 50% 50%,
+          var(--pink-600),
+          var(--pink-500),
+          var(--pink-400),
+          var(--pink-600)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 8px 30px rgba(255, 92, 138, 0.35);
+        font-weight: 800;
+      }
+      .subtitle {
+        margin: 0 0 24px 0;
+        font-size: clamp(14px, 2.6vw, 20px);
+        color: #6d2a45;
+        opacity: 0.9;
+      }
+      .cta {
+        appearance: none;
+        border: none;
+        cursor: pointer;
+        padding: 14px 22px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--pink-400), var(--pink-600));
+        color: white;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        box-shadow: 0 10px 30px rgba(255, 92, 138, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        transition: transform 0.15s ease, filter 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .cta:hover {
+        transform: translateY(-1px);
+        filter: saturate(1.05);
+      }
+      .cta:active {
+        transform: translateY(0);
+        filter: saturate(1.1) brightness(0.98);
+      }
+      .hint {
+        position: fixed;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        font-size: 12px;
+        color: #8b4d67;
+        opacity: 0.9;
+        user-select: none;
+        background: rgba(255, 255, 255, 0.55);
+        padding: 6px 10px;
+        border-radius: 999px;
+        backdrop-filter: blur(6px);
+      }
+      /* pulse effect for CTA and title */
+      @keyframes gentlePulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        40% {
+          transform: scale(1.05);
+        }
+      }
+      .pulse {
+        animation: gentlePulse 700ms ease-out both;
+      }
+      /* floating decorative hearts (pure CSS) */
+      .decor {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .decor .heart {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        opacity: 0.25;
+        background: radial-gradient(
+              circle at 30% 30%,
+              #fff,
+              rgba(255, 255, 255, 0) 60%
+            )
+            padding-box,
+          linear-gradient(180deg, var(--pink-300), var(--pink-500)) border-box;
+        border: 1px solid rgba(255, 92, 138, 0.35);
+        transform: rotate(45deg);
+        clip-path: path(
+          "M 7 0 C 7 2.8 3.6 4 0 7 C 3.6 10 7 12 7 14 C 7 12 10.4 10 14 7 C 10.4 4 7 2.8 7 0 Z"
+        );
+        filter: drop-shadow(0 4px 10px rgba(255, 92, 138, 0.35));
+      }
+      .decor .h1 {
+        top: 8%;
+        left: 10%;
+        animation: floatUp 18s linear infinite;
+      }
+      .decor .h2 {
+        top: 25%;
+        left: 80%;
+        animation: floatUp 22s linear infinite;
+        width: 18px;
+        height: 18px;
+      }
+      .decor .h3 {
+        top: 70%;
+        left: 20%;
+        animation: floatUp 26s linear infinite;
+        width: 12px;
+        height: 12px;
+      }
+      .decor .h4 {
+        top: 55%;
+        left: 60%;
+        animation: floatUp 24s linear infinite;
+        width: 16px;
+        height: 16px;
+      }
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) rotate(45deg);
+        }
+        100% {
+          transform: translateY(-120vh) rotate(45deg);
+        }
+      }
+
+      /* Mobile tweaks */
+      @media (max-width: 420px) {
+        .cta {
+          padding: 12px 18px;
+          font-size: 14px;
+        }
+        .subtitle {
+          font-size: 14px;
+        }
+      }
+
+      /* Respect reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .sparkle,
+        .decor .heart,
+        .pulse {
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="heartsCanvas"></canvas>
+    <div class="vignette"></div>
+    <div class="sparkle"></div>
+    <div class="decor">
+      <div class="heart h1"></div>
+      <div class="heart h2"></div>
+      <div class="heart h3"></div>
+      <div class="heart h4"></div>
+    </div>
+    <main>
+      <h1 class="title" id="heroTitle">喜欢你，乡乡</h1>
+      <p class="subtitle">如粉色漫天，心动不止。</p>
+      <button class="cta" id="ctaButton" aria-label="释放爱心">
+        点我撒满爱心
+      </button>
+    </main>
+    <div class="hint">轻触屏幕 / 按空格释放爱心，长按连发</div>
+    <script>
+      (function () {
+        const canvas = document.getElementById("heartsCanvas");
+        const ctx = canvas.getContext("2d");
+        let devicePixelRatioScale = 1;
+        function resizeCanvas() {
+          const dpr = Math.min(2, Math.max(1, window.devicePixelRatio || 1)); // cap DPR for mobile perf
+          devicePixelRatioScale = dpr;
+          const w = Math.floor(window.innerWidth * dpr);
+          const h = Math.floor(window.innerHeight * dpr);
+          if (canvas.width !== w || canvas.height !== h) {
+            canvas.width = w;
+            canvas.height = h;
+          }
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.scale(dpr, dpr);
+        }
+        resizeCanvas();
+        window.addEventListener(
+          "resize",
+          () => {
+            resizeCanvas();
+            adjustFloatingPopulation();
+          },
+          { passive: true }
+        );
+
+        const mediaReducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        );
+        mediaReducedMotion.addEventListener?.("change", () => {
+          adjustFloatingPopulation();
+        });
+
+        function isSmallScreen() {
+          return window.innerWidth <= 420;
+        }
+        function getBurstCountBase() {
+          return mediaReducedMotion.matches ? 12 : isSmallScreen() ? 28 : 36;
+        }
+        function getFloatingCountTarget() {
+          return mediaReducedMotion.matches ? 12 : isSmallScreen() ? 22 : 34;
+        }
+
+        function randomBetween(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+        function pick(arr) {
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // draw normalized heart centered around (0, 0.7) in unit space, then scale
+        function drawHeartPath(c) {
+          c.beginPath();
+          c.moveTo(0, 0.35);
+          c.bezierCurveTo(0, 0.1, -0.25, -0.05, -0.42, 0.02);
+          c.bezierCurveTo(-0.8, 0.18, -0.8, 0.62, -0.78, 0.72);
+          c.bezierCurveTo(-0.72, 1.02, -0.42, 1.18, 0, 1.4);
+          c.bezierCurveTo(0.42, 1.18, 0.72, 1.02, 0.78, 0.72);
+          c.bezierCurveTo(0.8, 0.62, 0.8, 0.18, 0.42, 0.02);
+          c.bezierCurveTo(0.25, -0.05, 0, 0.1, 0, 0.35);
+          c.closePath();
+        }
+        function fillHeart(
+          c,
+          x,
+          y,
+          pixelSize,
+          rotationRadians,
+          baseColor,
+          opacity
+        ) {
+          c.save();
+          c.globalAlpha = opacity;
+          c.translate(x, y);
+          c.rotate(rotationRadians);
+          const scale = pixelSize;
+          c.scale(scale, scale);
+          const grad = c.createRadialGradient(-0.15, 0.2, 0.05, 0.1, 0.8, 1.2);
+          grad.addColorStop(0, "rgba(255,255,255,0.95)");
+          grad.addColorStop(0.15, baseColor);
+          grad.addColorStop(1, "rgba(255,92,138,0.9)");
+          c.fillStyle = grad;
+          c.shadowColor = "rgba(255,92,138,0.6)";
+          c.shadowBlur = Math.max(8, pixelSize * 0.6);
+          drawHeartPath(c);
+          c.fill();
+          c.restore();
+        }
+
+        const baseColors = [
+          "rgba(255,159,187,1)",
+          "rgba(255,122,163,1)",
+          "rgba(255,92,138,1)",
+          "rgba(255,60,122,1)",
+        ];
+
+        // background floating hearts
+        const floatingHearts = [];
+        function createFloatingHeart() {
+          const size = randomBetween(10, 26);
+          return {
+            x: randomBetween(0, window.innerWidth),
+            y: randomBetween(window.innerHeight * 0.2, window.innerHeight),
+            size,
+            speedY: randomBetween(8, 18) / 60,
+            swayAmplitude: randomBetween(6, 18),
+            swaySpeed: randomBetween(0.6, 1.6),
+            swayPhase: Math.random() * Math.PI * 2,
+            rotation: randomBetween(-Math.PI / 6, Math.PI / 6),
+            rotationSpeed: randomBetween(-0.3, 0.3) / 60,
+            color: pick(baseColors),
+            opacity: randomBetween(0.35, 0.7),
+          };
+        }
+        function adjustFloatingPopulation() {
+          const target = getFloatingCountTarget();
+          if (floatingHearts.length < target) {
+            for (let i = floatingHearts.length; i < target; i++) {
+              floatingHearts.push(createFloatingHeart());
+            }
+          } else if (floatingHearts.length > target) {
+            floatingHearts.length = target;
+          }
+        }
+        for (let i = 0; i < getFloatingCountTarget(); i++)
+          floatingHearts.push(createFloatingHeart());
+
+        // burst particles
+        const bursts = [];
+        function emitBurst(screenX, screenY, count = 24, power = 1) {
+          const particles = [];
+          for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = randomBetween(120, 260) * power;
+            const vx = (Math.cos(angle) * speed) / 60;
+            const vy = (Math.sin(angle) * speed) / 60;
+            particles.push({
+              x: screenX,
+              y: screenY,
+              vx,
+              vy,
+              gravity: randomBetween(60, 120) / 60,
+              drag: randomBetween(0.985, 0.995),
+              size: randomBetween(10, 20),
+              life: randomBetween(0.9, 1.4),
+              age: 0,
+              rotation: randomBetween(-Math.PI, Math.PI),
+              rotationSpeed: randomBetween(-1.2, 1.2) / 30,
+              color: pick(baseColors),
+            });
+          }
+          bursts.push(...particles);
+        }
+
+        // gentle trail while moving
+        let lastPointerTime = 0;
+        function sprinkleTrail(x, y) {
+          const trailCount = Math.max(
+            4,
+            Math.round(getBurstCountBase() * 0.18)
+          );
+          emitBurst(x, y, trailCount, 0.45);
+        }
+
+        // input handling
+        let isPointerDown = false;
+        function screenPosFromEvent(e) {
+          if (e.touches && e.touches[0]) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }
+          return { x: e.clientX, y: e.clientY };
+        }
+        window.addEventListener("pointerdown", (e) => {
+          isPointerDown = true;
+          const { x, y } = screenPosFromEvent(e);
+          emitBurst(x, y, Math.round(getBurstCountBase() * 0.75), 1.1);
+          lastPointerTime = performance.now();
+        });
+        window.addEventListener(
+          "pointermove",
+          (e) => {
+            if (!isPointerDown) return;
+            const now = performance.now();
+            if (now - lastPointerTime > 60) {
+              const { x, y } = screenPosFromEvent(e);
+              sprinkleTrail(x, y);
+              lastPointerTime = now;
+            }
+          },
+          { passive: true }
+        );
+        window.addEventListener("pointerup", () => {
+          isPointerDown = false;
+        });
+        window.addEventListener("pointercancel", () => {
+          isPointerDown = false;
+        });
+        window.addEventListener("keydown", (e) => {
+          if (e.code === "Space") {
+            e.preventDefault();
+            emitBurst(
+              window.innerWidth / 2,
+              window.innerHeight / 2,
+              getBurstCountBase(),
+              1.2
+            );
+            pulse("#heroTitle");
+            pulse("#ctaButton");
+          }
+        });
+
+        // CTA
+        const cta = document.getElementById("ctaButton");
+        const title = document.getElementById("heroTitle");
+        function pulse(sel) {
+          const el =
+            typeof sel === "string" ? document.querySelector(sel) : sel;
+          if (!el) return;
+          el.classList.remove("pulse");
+          // force reflow to restart animation
+          void el.offsetWidth;
+          el.classList.add("pulse");
+        }
+        cta.addEventListener("click", () => {
+          emitBurst(
+            window.innerWidth / 2,
+            window.innerHeight / 2,
+            Math.round(getBurstCountBase() * 1.15),
+            1.25
+          );
+          pulse(title);
+          pulse(cta);
+        });
+
+        // main loop
+        let lastTime = performance.now();
+        function frame(now) {
+          const dt = Math.min(32, now - lastTime) / 16.6667; // relative to 60fps
+          lastTime = now;
+          ctx.clearRect(
+            0,
+            0,
+            canvas.width / devicePixelRatioScale,
+            canvas.height / devicePixelRatioScale
+          );
+
+          // update floating hearts
+          for (let i = 0; i < floatingHearts.length; i++) {
+            const h = floatingHearts[i];
+            h.y -= h.speedY * dt * 16.6667;
+            h.rotation += h.rotationSpeed * dt * 16.6667;
+            const swayX =
+              Math.sin(now * 0.0015 * h.swaySpeed + h.swayPhase) *
+              h.swayAmplitude;
+            let drawX = h.x + swayX;
+            let drawY = h.y;
+            fillHeart(
+              ctx,
+              drawX,
+              drawY,
+              h.size,
+              h.rotation,
+              h.color,
+              h.opacity
+            );
+            if (drawY < -30) {
+              // recycle to bottom
+              floatingHearts[i] = createFloatingHeart();
+              floatingHearts[i].y = window.innerHeight + randomBetween(10, 80);
+            }
+          }
+
+          // update bursts
+          for (let i = bursts.length - 1; i >= 0; i--) {
+            const p = bursts[i];
+            p.age += dt / 60;
+            p.vx *= p.drag;
+            p.vy = p.vy * p.drag + p.gravity * dt;
+            p.x += p.vx * dt * 16.6667;
+            p.y += p.vy * dt * 16.6667;
+            p.rotation += p.rotationSpeed * dt * 16.6667;
+            const lifeLeft = Math.max(0, 1 - p.age / p.life);
+            const opacity = Math.min(1, lifeLeft + 0.15);
+            const sizePx = p.size * (0.6 + 0.4 * lifeLeft);
+            fillHeart(ctx, p.x, p.y, sizePx, p.rotation, p.color, opacity);
+            if (lifeLeft <= 0 || p.y > window.innerHeight + 60) {
+              bursts.splice(i, 1);
+            }
+          }
+          requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+
+        // initial flourish
+        setTimeout(() => {
+          emitBurst(
+            window.innerWidth * 0.5,
+            window.innerHeight * 0.55,
+            getBurstCountBase(),
+            1.0
+          );
+          pulse(title);
+        }, 400);
+      })();
+    </script>
+  </body>
+</html>
