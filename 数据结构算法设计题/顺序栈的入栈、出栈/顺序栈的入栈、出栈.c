@@ -1,27 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAXSIZE 100
 typedef int ElemType;
 
-typedef struct stack
+typedef struct 
 {
-	ElemType data;
-	struct stack *next;
+	ElemType *data;
+	int top;
+	
 }Stack;
 
 //初始化
 Stack* initStack()
 {
 	Stack *s = (Stack*)malloc(sizeof(Stack));
-	s->data = 0;
-	s->next = NULL;
+	s->data = (ElemType*)malloc(sizeof(ElemType) * MAXSIZE);
+	s->top = -1;
 	return s;
 }
 
 //判断栈是否为空
 int isEmpty(Stack *s)
 {
-	if (s->next == NULL)
+	if (s->top == -1)
 	{
 		printf("空的\n");
 		return 1;
@@ -35,37 +37,39 @@ int isEmpty(Stack *s)
 //进栈/压栈
 int push(Stack *s, ElemType e)
 {
-	Stack *p = (Stack*)malloc(sizeof(Stack));
-	p->data = e;
-	p->next = s->next;
-	s->next = p;
+
+	if (s->top >= MAXSIZE - 1)
+	{
+		printf("满了\n");
+		return 0;
+	}
+	s->top++;
+	s->data[s->top] = e;
 	return 1;
 }
 
 //出栈
 int pop(Stack *s, ElemType *e)
 {
-	if(s->next == NULL)
+	if (s->top == -1)
 	{
 		printf("空的\n");
 		return 0;
 	}
-	*e = s->next->data;
-	Stack *q = s->next;
-	s->next = q->next;
-	free(q);
+	*e = s->data[s->top];
+	s->top--;
 	return 1;
 }
 
 //获取栈顶元素
 int getTop(Stack *s, ElemType *e)
 {
-	if (s->next == NULL)
+	if (s->top == -1)
 	{
 		printf("空的\n");
 		return 0;
 	}
-	*e = s->next->data;
+	*e = s->data[s->top];
 	return 1;
 }
 
